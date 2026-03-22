@@ -1,0 +1,36 @@
+{
+  "name": "liquidOS",
+  "version": "1.0.0",
+  "description": "LiquidOS — Web Shell for Linux",
+  "main": "main.js",
+  "author": "You",
+  "license": "MIT",
+  "scripts": {
+    "start":   "electron .",
+    "kiosk":   "electron . --kiosk",
+    "build":   "electron-builder --linux",
+    "pack":    "electron-builder --linux dir"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron":         "^30.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId":       "io.liquidOS.shell",
+    "productName": "LiquidOS",
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "System",
+      "executableName": "liquidOS"
+    },
+    "files": [
+      "main.js",
+      "app/**/*"
+    ],
+    "directories": {
+      "output": "dist",
+      "app":    "."
+    }
+  }
+}
