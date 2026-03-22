@@ -1,0 +1,18 @@
+# =============================================================================
+# /etc/default/grub — оптимизация загрузки для kiosk
+# После редактирования: sudo update-grub
+# =============================================================================
+
+# Убрать задержку выбора (0 = сразу загружать)
+GRUB_TIMEOUT=0
+GRUB_TIMEOUT_STYLE=hidden
+
+# Ядро: тихая загрузка без лого, без fsck-прогресса
+GRUB_CMDLINE_LINUX_DEFAULT="quiet loglevel=0 rd.systemd.show_status=false rd.udev.log_level=3 vt.global_cursor_default=0"
+
+# Графика: framebuffer для красивого boot-splasha (опционально)
+# GRUB_GFXMODE=1920x1080x32
+# GRUB_GFXPAYLOAD_LINUX=keep
+
+GRUB_CMDLINE_LINUX=""
+GRUB_DISTRIBUTOR="LiquidOS"
