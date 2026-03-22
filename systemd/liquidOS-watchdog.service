@@ -1,0 +1,23 @@
+# =============================================================================
+# liquidOS-watchdog.service
+# Расположение: /etc/systemd/system/liquidOS-watchdog.service
+# (системный, не пользовательский — нужен root для мониторинга)
+#
+# Следит за kiosk-сервисом и перезапускает его при зависании.
+# =============================================================================
+
+[Unit]
+Description=LiquidOS Kiosk Watchdog
+After=multi-user.target
+
+[Service]
+Type=simple
+User=root
+
+ExecStart=/opt/liquidOS/scripts/watchdog.sh
+
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

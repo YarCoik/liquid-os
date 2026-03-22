@@ -1,0 +1,82 @@
+# =============================================================================
+# liquidOS-kiosk.service
+# Расположение: ~/.config/systemd/user/liquidOS-kiosk.service
+#
+# Запускает cage (минималистичный Wayland-композитор для kiosk)
+# который открывает ровно одно окно: Chromium --kiosk с нашим LiquidOS.
+#
+# Cage документация: https://github.com/cage-kiosk/cage
+# =============================================================================
+
+[Unit]
+Description=LiquidOS Kiosk Shell
+# Запускать только когда есть виртуальный терминал (мы на tty1)
+After=systemd-user-sessions.service
+# Перезапускать если Chromium упал (защита от crashloop)
+StartLimitIntervalSec=30
+StartLimitBurst=5
+
+[Service]
+Type=simple
+
+# ── Переменные окружения ──────────────────────────────────────────────────────
+Environment="KIOSK_APP=/opt/liquidOS/index.html"
+# Принудительный Wayland backend для chromium
+Environment="WAYLAND_DISPLAY=wayland-0"
+# Путь для Wayland socket
+Environment="XDG_RUNTIME_DIR=/run/user/%U"
+# Запретить Chromium слать данные в Google
+Environment="CHROMIUM_FLAGS=--disable-logging"
+# Отключить screensaver
+Environment="XSCRNSAVER_NO=1"
+
+# ── Команда запуска ───────────────────────────────────────────────────────────
+# cage [options] -- <command>
+#   -s  : stretch (растянуть на весь экран)
+#   -d  : не показывать курсор мыши (закомментируй если нужен)
+ExecStart=/usr/bin/cage -s -- \
+    /usr/bin/chromium-browser \
+        --kiosk \
+        --noerrdialogs \
+        --disable-infobars \
+        --no-first-run \
+        --disable-translate \
+        --disable-features=TranslateUI \
+        --disable-component-update \
+        --disable-background-networking \
+        --disable-sync \
+        --disable-extensions \
+        --disable-plugins \
+        --disable-default-apps \
+        --disable-hang-monitor \
+        --disable-prompt-on-repost \
+        --disable-domain-reliability \
+        --disable-client-side-phishing-detection \
+        --metrics-recording-only \
+        --no-default-browser-check \
+        --disable-breakpad \
+        --disable-crash-reporter \
+        --autoplay-policy=no-user-gesture-required \
+        --enable-features=UseOzonePlatform \
+        --ozone-platform=wayland \
+        --enable-gpu-rasterization \
+        --enable-zero-copy \
+        --ignore-gpu-blocklist \
+        --use-gl=egl \
+        --enable-accelerated-2d-canvas \
+        --disable-web-security \
+        --allow-file-access-from-files \
+        "file:///opt/liquidOS/index.html"
+
+# ── Рестарт при падении ───────────────────────────────────────────────────────
+Restart=on-failure
+RestartSec=3s
+
+# ── Ограничения ресурсов ──────────────────────────────────────────────────────
+# Chromium с canvas/webgl потребляет память — даём ему приоритет
+Nice=-5
+# Защита от OOM-killer
+OOMScoreAdjust=-500
+
+[Install]
+WantedBy=default.target
